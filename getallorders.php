@@ -17,19 +17,24 @@ if (isset($authHeader['Authorization']) && $_SERVER['REQUEST_METHOD'] == 'POST')
         $arraydecoded = (array)$decoded;
 
         http_response_code(200);
-        
+
         //CHECK IF USER EXISTS IN DATA
         $stmt = $conn->prepare("SELECT * FROM customerlogin WHERE username=?");
         $stmt->execute([$arraydecoded['username']]);
         if ($stmt->rowCount() > 0) {
             $userdata = $stmt->fetch();
-            if($arraydecoded['id'] == $userdata['id']){
-                echo json_encode($arraydecoded + ['status' => 'valid']);
-            }else{
-                echo json_encode(array('status' => 'invalid'));
+            if ($arraydecoded['id'] == $userdata['id']) {
+                $stmt = $conn->prepare("SELECT * FROM orders WHERE customerid=? ORDER BY orderid DESC");
+                $stmt->execute([$arraydecoded['id']]);
+                while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+                    $responsedata[] = $row;
+                }
+                echo json_encode($responsedata);
+            } else {
+                echo json_encode(array('status' => 'error'));
             }
-        }else{
-            echo json_encode(array('status' => 'deleted'));
+        } else {
+            echo json_encode(array('status' => 'error'));
         }
     } catch (Exception $e) {
         http_response_code(401);
@@ -37,5 +42,5 @@ if (isset($authHeader['Authorization']) && $_SERVER['REQUEST_METHOD'] == 'POST')
     }
 } else {
     http_response_code(401);
-    echo json_encode(array('status' => 'noaccess'));
+    echo json_encode(array('status' => 'error'));
 }

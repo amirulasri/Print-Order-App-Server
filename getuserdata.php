@@ -6,10 +6,6 @@ include_once 'vendor/autoload.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-$orderid = "";
-if(isset($_GET['d'])){
-    $orderid = $_GET['d'];
-}
 $authHeader = getallheaders();
 if (isset($authHeader['Authorization']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $token = $authHeader['Authorization'];

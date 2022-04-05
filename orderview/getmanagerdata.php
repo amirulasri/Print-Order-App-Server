@@ -2,10 +2,6 @@
 include_once '../conn.php';
 include_once '../config/cors.php';
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 $orderid = "";
 if(isset($_GET['d'])){
     $orderid = $_GET['d'];
